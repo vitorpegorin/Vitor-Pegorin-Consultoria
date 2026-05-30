@@ -151,9 +151,71 @@ tbody tr:hover td{background:#f9fafb;}
 .empty{text-align:center;padding:40px;color:#9ca3af;font-size:13px;}
 .demo-footer{text-align:center;font-size:11px;color:#d1d5db;padding:8px 0 4px;}
 .mb16{margin-bottom:16px;}
+
+/* ── Login ── */
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%);z-index:9999;display:flex;align-items:center;justify-content:center;}
+#login-screen.oculto{display:none;}
+#recovery-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%);z-index:9999;display:none;align-items:center;justify-content:center;}
+#recovery-screen.open{display:flex;}
+.login-box{background:#fff;border-radius:20px;padding:40px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.4);margin:16px;}
+.login-logo{width:56px;height:56px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:16px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:24px;color:#fff;margin:0 auto 20px;}
+.login-title{text-align:center;font-size:22px;font-weight:800;color:#111827;margin-bottom:4px;}
+.login-sub{text-align:center;font-size:13px;color:#6b7280;margin-bottom:28px;}
+.login-msg{border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;display:none;}
+.login-msg.erro{background:#fef2f2;color:#991b1b;}
+.login-msg.ok{background:#f0fdf4;color:#065f46;}
+.link-btn{background:none;border:none;color:#6366f1;font-size:13px;cursor:pointer;font-family:inherit;padding:0;}
+.link-btn:hover{color:#4338ca;text-decoration:underline;}
 </style>
 </head>
 <body>
+
+<!-- ═══════ LOGIN ═══════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">$</div>
+    <div class="login-title">Painel Financeiro</div>
+    <div class="login-sub">LeadLever Academy — acesso restrito</div>
+    <div class="login-msg" id="login-msg"></div>
+    <div class="fg">
+      <label class="fl">E-mail</label>
+      <input type="email" id="li-email" class="fi" placeholder="seu@email.com"/>
+    </div>
+    <div class="fg">
+      <label class="fl">Senha</label>
+      <input type="password" id="li-senha" class="fi" placeholder="••••••••"
+             onkeydown="if(event.key==='Enter')fazerLogin()"/>
+    </div>
+    <button class="btn bp" id="btn-login"
+            style="width:100%;justify-content:center;padding:10px;margin-top:4px;"
+            onclick="fazerLogin()">Entrar</button>
+    <div style="text-align:center;margin-top:18px;">
+      <button class="link-btn" onclick="mostrarEsqueciSenha()">Esqueci minha senha</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ RECOVERY ═══════ -->
+<div id="recovery-screen">
+  <div class="login-box">
+    <div class="login-logo" style="font-size:20px;">🔑</div>
+    <div class="login-title">Nova senha</div>
+    <div class="login-sub">Defina sua nova senha de acesso</div>
+    <div class="login-msg" id="rec-msg"></div>
+    <div class="fg">
+      <label class="fl">Nova senha</label>
+      <input type="password" id="rec-senha" class="fi" placeholder="Mínimo 6 caracteres"/>
+    </div>
+    <div class="fg">
+      <label class="fl">Confirmar senha</label>
+      <input type="password" id="rec-conf" class="fi" placeholder="Repita a senha"
+             onkeydown="if(event.key==='Enter')salvarNovaSenha()"/>
+    </div>
+    <button class="btn bp" id="btn-rec"
+            style="width:100%;justify-content:center;padding:10px;margin-top:4px;"
+            onclick="salvarNovaSenha()">Salvar nova senha</button>
+  </div>
+</div>
 
 <!-- ═══════ SIDEBAR ═══════ -->
 <aside>
@@ -185,7 +247,7 @@ tbody tr:hover td{background:#f9fafb;}
     </div>
   </nav>
   <div class="sb-footer">
-    <button class="btn-sair" onclick="toast('Sessão encerrada. Até logo!','sucesso')">
+    <button class="btn-sair" onclick="fazerLogout()">
       <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sair
     </button>
   </div>
@@ -1322,9 +1384,91 @@ function editarConta(banco,tipo){
 }
 
 // ══════════════════════════════════════════════
+// AUTENTICAÇÃO
+// ══════════════════════════════════════════════
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    document.getElementById('login-screen').classList.add('oculto');
+    document.getElementById('recovery-screen').classList.add('open');
+  } else if (event === 'SIGNED_IN') {
+    const rec = document.getElementById('recovery-screen');
+    if (!rec.classList.contains('open')) {
+      document.getElementById('login-screen').classList.add('oculto');
+      if (!chartBarras) await iniciarDashboard();
+    }
+  } else if (event === 'SIGNED_OUT') {
+    document.getElementById('login-screen').classList.remove('oculto');
+  }
+});
+
+async function fazerLogin() {
+  const email = document.getElementById('li-email').value.trim();
+  const senha = document.getElementById('li-senha').value;
+  const btn   = document.getElementById('btn-login');
+  if (!email || !senha) { loginMsg('Preencha e-mail e senha', 'erro'); return; }
+  btn.textContent = 'Entrando...'; btn.disabled = true;
+  const { error } = await sb.auth.signInWithPassword({ email, password: senha });
+  btn.textContent = 'Entrar'; btn.disabled = false;
+  if (error) { loginMsg('E-mail ou senha incorretos', 'erro'); return; }
+  // onAuthStateChange cuida de esconder a tela de login
+}
+
+function loginMsg(msg, tipo) {
+  const el = document.getElementById('login-msg');
+  el.textContent = msg;
+  el.className = 'login-msg ' + tipo;
+  el.style.display = 'block';
+  if (tipo === 'erro') setTimeout(() => el.style.display = 'none', 4000);
+}
+
+async function fazerLogout() {
+  await sb.auth.signOut();
+  // onAuthStateChange exibe a tela de login
+}
+
+function mostrarEsqueciSenha() {
+  const email = document.getElementById('li-email').value.trim();
+  abrirModal('Recuperar senha', `
+    <p style="font-size:13px;color:#6b7280;margin-bottom:16px;">
+      Informe seu e-mail e enviaremos um link para redefinir sua senha.</p>
+    <div class="fg"><label class="fl">E-mail</label>
+      <input type="email" id="esq-email" class="fi" value="${email}" placeholder="seu@email.com"/></div>`,
+    `<button class="btn bs" onclick="fecharModal()">Cancelar</button>
+     <button class="btn bp" onclick="enviarEmailRecuperacao()">Enviar link</button>`
+  );
+}
+
+async function enviarEmailRecuperacao() {
+  const email = document.getElementById('esq-email').value.trim();
+  if (!email) { toast('Informe seu e-mail', 'erro'); return; }
+  const redirectTo = window.location.origin + window.location.pathname;
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
+  if (error) { toast('Erro: ' + error.message, 'erro'); return; }
+  fecharModal();
+  loginMsg('✓ Link enviado! Verifique seu e-mail para redefinir a senha.', 'ok');
+}
+
+async function salvarNovaSenha() {
+  const senha = document.getElementById('rec-senha').value;
+  const conf  = document.getElementById('rec-conf').value;
+  const btn   = document.getElementById('btn-rec');
+  const err   = document.getElementById('rec-msg');
+  const showErr = (msg) => { err.textContent = msg; err.className = 'login-msg erro'; err.style.display = 'block'; };
+  if (senha.length < 6) { showErr('A senha deve ter pelo menos 6 caracteres'); return; }
+  if (senha !== conf)   { showErr('As senhas não coincidem'); return; }
+  btn.textContent = 'Salvando...'; btn.disabled = true;
+  const { error } = await sb.auth.updateUser({ password: senha });
+  btn.textContent = 'Salvar nova senha'; btn.disabled = false;
+  if (error) { showErr('Erro: ' + error.message); return; }
+  document.getElementById('recovery-screen').classList.remove('open');
+  await sb.auth.signOut();
+  toast('Senha atualizada! Faça login com a nova senha.', 'sucesso');
+}
+
+// ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', async ()=>{
+async function iniciarDashboard() {
   await carregarDados();
   initCharts();
   const meses = [...new Set(LANCS.map(l=>l.mes))].sort().reverse();
@@ -1334,6 +1478,15 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   atualizarSelectCatsLanc();
   renderTabelaLanc(LANCS.filter(l=>l.mes===mesInicial));
   renderTabelaCats();
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    document.getElementById('login-screen').classList.add('oculto');
+    await iniciarDashboard();
+  }
+  // Se não tiver sessão, a tela de login já está visível por padrão
 });
 </script>
 </body>
