@@ -988,8 +988,6 @@ async function processarArquivo(input) {
     if (file.name.endsWith('.pdf')) {
       fill.style.width = '50%'; status.textContent = 'Extraindo texto do PDF...';
       const texto = await extrairTextoPDF(file);
-      console.log('=== TEXTO EXTRAÍDO DO PDF (primeiras 200 linhas) ===');
-      texto.split('\n').slice(0,200).forEach((l,i) => console.log(i+':',l));
       fill.style.width = '80%'; status.textContent = 'Categorizando transações...';
       transacoes = parseInterTexto(texto);
     } else {
@@ -1050,17 +1048,26 @@ function cancelarImport() {
 async function salvarImport() {
   const selecionados = _importBuffer.filter(t => t.selecionado);
   if (!selecionados.length) { toast('Nenhuma transação selecionada','erro'); return; }
-  document.getElementById('btn-salvar-import').textContent = 'Salvando...';
+  const btn = document.getElementById('btn-salvar-import');
+  btn.textContent = 'Salvando...';
+
+  // Apaga lançamentos existentes dos meses presentes no extrato (evita duplicatas)
+  const meses = [...new Set(selecionados.map(t => t.mes))];
+  for (const mes of meses) {
+    const { error: delErr } = await sb.from('lancamentos').delete().eq('mes', mes);
+    if (delErr) { toast('Erro ao limpar mês ' + mes + ': ' + delErr.message, 'erro'); btn.textContent = 'Salvar no banco'; return; }
+  }
+
   const rows = selecionados.map(t => ({
     tipo: t.tipo, descricao: t.desc, categoria: t.categoria,
     data: t.data, mes: t.mes, valor: t.valor
   }));
   const { error } = await sb.from('lancamentos').insert(rows);
-  if (error) { toast('Erro ao salvar: ' + error.message, 'erro'); return; }
+  if (error) { toast('Erro ao salvar: ' + error.message, 'erro'); btn.textContent = 'Salvar no banco'; return; }
   await carregarDados();
   cancelarImport();
   toast(`${rows.length} lançamentos importados com sucesso!`, 'sucesso');
-  document.getElementById('btn-salvar-import').textContent = 'Salvar no banco';
+  btn.textContent = 'Salvar no banco';
 }
 
 // ══════════════════════════════════════════════
