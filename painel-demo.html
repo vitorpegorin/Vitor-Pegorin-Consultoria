@@ -6,6 +6,7 @@
 <title>Painel Financeiro</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f9fafb;display:flex;min-height:100vh;}
@@ -292,46 +293,39 @@ tbody tr:hover td{background:#f9fafb;}
 
 <!-- ── IMPORTAR ── -->
 <div class="page" id="page-importar">
-  <div class="ph"><div><h2>Importar</h2><p>Importe extratos bancários em CSV ou OFX</p></div></div>
-  <div class="g2">
-    <div class="card">
-      <h3>Selecione o arquivo</h3>
-      <input type="file" id="file-input" accept=".csv,.ofx,.xlsx" style="display:none;" onchange="onFileSelected(this)">
-      <div class="upload-area" onclick="document.getElementById('file-input').click()">
-        <div class="upload-icon">📂</div>
-        <h4 id="upload-label">Clique para selecionar ou arraste aqui</h4>
-        <p>Formatos aceitos: .csv, .ofx, .xlsx</p>
-        <p style="margin-top:6px;font-size:11px;color:#d1d5db;">Tamanho máximo: 10 MB</p>
-      </div>
-      <div id="import-progress" style="display:none;">
-        <div class="import-bar"><div class="import-fill" id="import-fill"></div></div>
-        <p id="import-status" style="font-size:12px;color:#6b7280;text-align:center;"></p>
-      </div>
-      <div style="margin-top:16px;display:flex;gap:10px;">
-        <select id="import-conta" style="flex:1;">
-          <option>Conta Corrente — Nubank</option>
-          <option>Conta Corrente — Itaú</option>
-          <option>Cartão Amex</option>
-          <option>Cartão Elo</option>
-        </select>
-        <button class="btn bp" onclick="simularImport()">Importar</button>
-      </div>
+  <div class="ph"><div><h2>Importar</h2><p>Importe extratos do Banco Inter em PDF ou CSV</p></div></div>
+  <div class="card" style="max-width:560px;margin-bottom:20px;">
+    <h3>Selecione o extrato</h3>
+    <input type="file" id="file-input" accept=".pdf,.csv" style="display:none;" onchange="processarArquivo(this)">
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()"
+         ondragover="event.preventDefault();this.style.borderColor='#6366f1'" ondragleave="this.style.borderColor=''"
+         ondrop="event.preventDefault();this.style.borderColor='';processarArquivo({files:event.dataTransfer.files})">
+      <div class="upload-icon">📄</div>
+      <h4 id="upload-label">Clique ou arraste o PDF/CSV do Inter</h4>
+      <p>Extrato PDF ou CSV exportado pelo app Banco Inter</p>
     </div>
-    <div class="card">
-      <h3>Histórico de importações</h3>
-      <div class="tw"><table id="tbl-import-hist">
-        <thead><tr><th>Data</th><th>Arquivo</th><th>Conta</th><th>Registros</th><th>Status</th></tr></thead>
-        <tbody id="tbody-import">
-          <tr><td>10/04/2026</td><td>extrato-abr.csv</td><td>Nubank</td><td>34</td><td><span class="badge verde">✓ Importado</span></td></tr>
-          <tr><td>08/03/2026</td><td>extrato-mar.csv</td><td>Nubank</td><td>29</td><td><span class="badge verde">✓ Importado</span></td></tr>
-          <tr><td>05/03/2026</td><td>fatura-amex-mar.ofx</td><td>Amex</td><td>18</td><td><span class="badge verde">✓ Importado</span></td></tr>
-          <tr><td>07/02/2026</td><td>extrato-fev.csv</td><td>Nubank</td><td>26</td><td><span class="badge verde">✓ Importado</span></td></tr>
-          <tr><td>03/01/2026</td><td>extrato-jan.csv</td><td>Itaú</td><td>31</td><td><span class="badge amarelo">⚠ Parcial</span></td></tr>
-        </tbody>
-      </table></div>
+    <div id="import-progress" style="display:none;margin-top:14px;">
+      <div class="import-bar"><div class="import-fill" id="import-fill"></div></div>
+      <p id="import-status" style="font-size:12px;color:#6b7280;text-align:center;margin-top:6px;"></p>
     </div>
   </div>
-  <div class="demo-footer" style="margin-top:16px;">⚠ Dados fictícios — apenas para demonstração visual</div>
+  <div id="import-preview" style="display:none;">
+    <div class="ph" style="margin-bottom:12px;">
+      <div><h2 style="font-size:16px;">Transações encontradas</h2><p id="preview-resumo"></p></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn bs" onclick="cancelarImport()">Cancelar</button>
+        <button class="btn bp" id="btn-salvar-import" onclick="salvarImport()">Salvar no banco</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tw">
+        <table>
+          <thead><tr><th><input type="checkbox" id="chk-all" onchange="toggleTodos(this.checked)" checked></th><th>Data</th><th>Descrição</th><th>Tipo</th><th>Valor</th><th>Categoria</th></tr></thead>
+          <tbody id="tbody-preview"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ── PENDENTES ── -->
@@ -851,40 +845,207 @@ async function confirmarExclusao(id){
 }
 
 // ══════════════════════════════════════════════
-// IMPORTAR
+// IMPORTAR — BANCO INTER
 // ══════════════════════════════════════════════
-function onFileSelected(input){
-  if(input.files&&input.files[0]){
-    document.getElementById('upload-label').textContent='📄 '+input.files[0].name;
+const MESES_PT = {Janeiro:'01',Fevereiro:'02','Março':'03','Março':'03',Abril:'04',Maio:'05',Junho:'06',Julho:'07',Agosto:'08',Setembro:'09',Outubro:'10',Novembro:'11',Dezembro:'12'};
+
+// Tipos do Inter que são apenas movimentos internos de investimento — ignorar
+const SKIP_INTER = ['Aplicacao','Resgate','Credito Evento B3','Debito B3','Iof Op Conta Intl Loop','Dep Conta Intl Loop','Cred Pontos Conta Global'];
+
+function categorizarInter(tipo, desc, valor) {
+  const d = desc.toUpperCase();
+  const t = tipo.toLowerCase();
+  if (valor > 0) {
+    if (d.includes('MENSALIDADE')) return 'Mensalidade Presencial';
+    if (d.includes('CONSULTORIA')) return 'Pagamento de Consultoria';
+    return 'Outros';
+  } else {
+    if (d.includes('RECEITA FEDERAL') || d.includes(' DAS ') || d.includes('SIMPLES')) return 'Imposto';
+    if (d.includes('META ADS') || d.includes('GOOGLE ADS') || d.includes('FACEBOOK ADS')) return 'Anúncios';
+    if (d.includes('TELEFONICA') || d.includes('CLARO') || d.includes('TIM') || d.includes('VIVO') || d.includes('KIWIFY') || d.includes('HOTMART') || d.includes('PJBANK')) return 'Ferramentas Digitais';
+    if (d.includes('CAMERA') || d.includes('CÂMERA') || d.includes('SONY') || d.includes('CANON') || d.includes('AUDIOVISUAL')) return 'Equipamento Audiovisual';
+    if (t.includes('fatura cartao') || t.includes('debito automatico')) return 'Ferramentas Digitais';
+    return 'Outros';
   }
 }
 
-function simularImport(){
-  const prog=document.getElementById('import-progress');
-  const fill=document.getElementById('import-fill');
-  const status=document.getElementById('import-status');
-  prog.style.display='block'; fill.style.width='0%';
-  status.textContent='Lendo arquivo...';
-  let p=0;
-  const iv=setInterval(()=>{
-    p+=Math.random()*18+5;
-    if(p>=100){p=100;clearInterval(iv);
-      status.textContent='✓ 34 registros importados com sucesso!';
-      const conta=document.getElementById('import-conta').value;
-      const hoje=new Date();
-      const d=`${String(hoje.getDate()).padStart(2,'0')}/${String(hoje.getMonth()+1).padStart(2,'0')}/${hoje.getFullYear()}`;
-      const arquivo=document.getElementById('file-input').files[0]?.name||'extrato.csv';
-      const tbody=document.getElementById('tbody-import');
-      const tr=document.createElement('tr');
-      tr.innerHTML=`<td>${d}</td><td>${arquivo}</td><td>${conta.split('—')[1]?.trim()||conta}</td><td>${Math.floor(Math.random()*20)+15}</td><td><span class="badge verde">✓ Importado</span></td>`;
-      tbody.insertBefore(tr,tbody.firstChild);
-      toast('Extrato importado com sucesso!','sucesso');
+function parseValorInter(s) {
+  return parseFloat(s.replace(/R\$\s?/g,'').replace(/\./g,'').replace(',','.').replace(/\s/g,''));
+}
+
+async function extrairTextoPDF(file) {
+  const buffer = await file.arrayBuffer();
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+  const pdf = await pdfjsLib.getDocument({data: buffer}).promise;
+  let texto = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    texto += content.items.map(it => it.str).join(' ') + '\n';
+  }
+  return texto;
+}
+
+function parseInterTexto(texto) {
+  const transacoes = [];
+  let dataAtual = null, mesAtual = null;
+
+  // Normaliza espaços múltiplos
+  const linhas = texto.split('\n').map(l => l.replace(/\s+/g,' ').trim()).filter(Boolean);
+
+  for (const linha of linhas) {
+    // Detecta data: "30 de Abril de 2026 Saldo do dia..."
+    const mData = linha.match(/^(\d{1,2}) de (\w+) de (\d{4})/);
+    if (mData) {
+      const [,dia,mes,ano] = mData;
+      const mm = MESES_PT[mes] || '01';
+      dataAtual = `${ano}-${mm}-${dia.padStart(2,'0')}`;
+      mesAtual  = `${ano}-${mm}`;
+      continue;
     }
-    fill.style.width=p+'%';
-    if(p<40)status.textContent='Lendo arquivo...';
-    else if(p<70)status.textContent='Processando transações...';
-    else if(p<100)status.textContent='Categorizando lançamentos...';
-  },120);
+    if (!dataAtual) continue;
+
+    // Detecta transação: "Tipo: "Desc" -R$ X,XX -R$ Y,YY"
+    // Ou sem sinal: "Tipo: "Desc" R$ X,XX R$ Y,YY"
+    const mTx = linha.match(/^(.+?):\s+"(.+?)"\s+([-]?R\$\s?[\d\.,]+)/);
+    if (!mTx) continue;
+
+    const [, tipo, desc, valorRaw] = mTx;
+    if (SKIP_INTER.some(s => tipo.startsWith(s))) continue;
+    if (tipo.includes('Pix recebido devolvido')) continue;
+
+    const valor = parseValorInter(valorRaw);
+    if (isNaN(valor) || valor === 0) continue;
+
+    const tipoNorm = valor > 0 ? 'entrada' : 'saida';
+    const categoria = categorizarInter(tipo, desc, valor);
+
+    transacoes.push({
+      tipo: tipoNorm,
+      desc: `${tipo}: ${desc}`,
+      categoria,
+      data: dataAtual,
+      mes: mesAtual,
+      valor: Math.abs(valor),
+      selecionado: true
+    });
+  }
+  return transacoes;
+}
+
+function parseInterCSV(texto) {
+  const linhas = texto.split('\n').map(l => l.trim()).filter(Boolean);
+  const transacoes = [];
+  // Pula cabeçalho
+  for (let i = 1; i < linhas.length; i++) {
+    const cols = linhas[i].split(';');
+    if (cols.length < 4) continue;
+    const [dataRaw, historico, descricao, valorRaw] = cols;
+    const [dd, mm, yyyy] = dataRaw.split('/');
+    const valor = parseValorInter(valorRaw);
+    if (isNaN(valor) || valor === 0) continue;
+    if (SKIP_INTER.some(s => historico.includes(s))) continue;
+    const tipoNorm = valor > 0 ? 'entrada' : 'saida';
+    transacoes.push({
+      tipo: tipoNorm,
+      desc: `${historico}: ${descricao}`,
+      categoria: categorizarInter(historico, descricao, valor),
+      data: `${yyyy}-${mm}-${dd}`,
+      mes: `${yyyy}-${mm}`,
+      valor: Math.abs(valor),
+      selecionado: true
+    });
+  }
+  return transacoes;
+}
+
+let _importBuffer = [];
+
+async function processarArquivo(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  document.getElementById('upload-label').textContent = '📄 ' + file.name;
+  const prog = document.getElementById('import-progress');
+  const fill = document.getElementById('import-fill');
+  const status = document.getElementById('import-status');
+  prog.style.display = 'block';
+  fill.style.width = '20%';
+  status.textContent = 'Lendo arquivo...';
+
+  try {
+    let transacoes = [];
+    if (file.name.endsWith('.pdf')) {
+      fill.style.width = '50%'; status.textContent = 'Extraindo texto do PDF...';
+      const texto = await extrairTextoPDF(file);
+      fill.style.width = '80%'; status.textContent = 'Categorizando transações...';
+      transacoes = parseInterTexto(texto);
+    } else {
+      const texto = await file.text();
+      transacoes = parseInterCSV(texto);
+    }
+    fill.style.width = '100%';
+    status.textContent = `✓ ${transacoes.length} transações encontradas`;
+    _importBuffer = transacoes;
+    setTimeout(() => mostrarPreviewImport(transacoes), 400);
+  } catch(e) {
+    status.textContent = '✗ Erro ao processar arquivo: ' + e.message;
+    console.error(e);
+  }
+}
+
+function mostrarPreviewImport(transacoes) {
+  document.getElementById('import-preview').style.display = 'block';
+  const entradas = transacoes.filter(t => t.tipo === 'entrada').reduce((s,t) => s+t.valor, 0);
+  const saidas   = transacoes.filter(t => t.tipo === 'saida').reduce((s,t) => s+t.valor, 0);
+  document.getElementById('preview-resumo').textContent =
+    `${transacoes.length} transações — Entradas: ${fmt(entradas)} | Saídas: ${fmt(saidas)}`;
+
+  const allCats = [...CAT_ENTRADA, ...CAT_SAIDA].map(c => c.n);
+  const opts = allCats.map(n => `<option>${n}</option>`).join('');
+
+  document.getElementById('tbody-preview').innerHTML = transacoes.map((t, i) => `
+    <tr id="prev-row-${i}">
+      <td><input type="checkbox" ${t.selecionado?'checked':''} onchange="_importBuffer[${i}].selecionado=this.checked"></td>
+      <td style="white-space:nowrap">${fmtData(t.data)}</td>
+      <td style="font-size:12px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.desc}">${t.desc}</td>
+      <td><span class="badge ${t.tipo}">${t.tipo==='entrada'?'Entrada':'Saída'}</span></td>
+      <td class="${t.tipo==='entrada'?'ve':'vs'}">${fmt(t.valor)}</td>
+      <td><select style="font-size:12px;padding:4px 8px;" onchange="_importBuffer[${i}].categoria=this.value">
+        ${allCats.map(n=>`<option${n===t.categoria?' selected':''}>${n}</option>`).join('')}
+      </select></td>
+    </tr>`).join('');
+}
+
+function toggleTodos(checked) {
+  _importBuffer.forEach((t, i) => {
+    t.selecionado = checked;
+    const chk = document.querySelector(`#prev-row-${i} input[type=checkbox]`);
+    if (chk) chk.checked = checked;
+  });
+}
+
+function cancelarImport() {
+  document.getElementById('import-preview').style.display = 'none';
+  document.getElementById('import-progress').style.display = 'none';
+  document.getElementById('upload-label').textContent = 'Clique ou arraste o PDF/CSV do Inter';
+  document.getElementById('file-input').value = '';
+  _importBuffer = [];
+}
+
+async function salvarImport() {
+  const selecionados = _importBuffer.filter(t => t.selecionado);
+  if (!selecionados.length) { toast('Nenhuma transação selecionada','erro'); return; }
+  document.getElementById('btn-salvar-import').textContent = 'Salvando...';
+  const rows = selecionados.map(t => ({
+    tipo: t.tipo, descricao: t.desc, categoria: t.categoria,
+    data: t.data, mes: t.mes, valor: t.valor
+  }));
+  const { error } = await sb.from('lancamentos').insert(rows);
+  if (error) { toast('Erro ao salvar: ' + error.message, 'erro'); return; }
+  await carregarDados();
+  cancelarImport();
+  toast(`${rows.length} lançamentos importados com sucesso!`, 'sucesso');
+  document.getElementById('btn-salvar-import').textContent = 'Salvar no banco';
 }
 
 // ══════════════════════════════════════════════
