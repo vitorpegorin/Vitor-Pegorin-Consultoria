@@ -988,6 +988,8 @@ async function processarArquivo(input) {
     if (file.name.endsWith('.pdf')) {
       fill.style.width = '50%'; status.textContent = 'Extraindo texto do PDF...';
       const texto = await extrairTextoPDF(file);
+      console.log('=== TEXTO EXTRAÍDO DO PDF (primeiras 200 linhas) ===');
+      texto.split('\n').slice(0,200).forEach((l,i) => console.log(i+':',l));
       fill.style.width = '80%'; status.textContent = 'Categorizando transações...';
       transacoes = parseInterTexto(texto);
     } else {
