@@ -444,39 +444,37 @@ tbody tr:hover td{background:#f9fafb;}
 <div class="page" id="page-configuracoes">
   <div class="ph">
     <div><h2>Configurações</h2><p>Preferências do painel</p></div>
-    <button class="btn bp" onclick="salvarConfig()">Salvar alterações</button>
+    <button class="btn bp" id="btn-salvar-cfg" onclick="salvarConfig()">Salvar alterações</button>
   </div>
   <div style="max-width:640px;">
     <div class="card mb16">
       <div class="fs">
         <div class="fst">Acesso</div>
-        <div class="fg"><label class="fl">E-mail de acesso</label><input type="email" class="fi" placeholder="seu@email.com"/></div>
+        <div class="fg"><label class="fl">E-mail de acesso</label><input type="email" id="cfg-email-acesso" class="fi" readonly style="background:#f9fafb;color:#6b7280;cursor:default;"/></div>
         <div class="fr">
-          <div class="fg"><label class="fl">Nova senha</label><input type="password" class="fi" placeholder="••••••••"/></div>
-          <div class="fg"><label class="fl">Confirmar senha</label><input type="password" class="fi" placeholder="••••••••"/></div>
+          <div class="fg"><label class="fl">Nova senha</label><input type="password" id="cfg-nova-senha" class="fi" placeholder="Deixe em branco para não alterar"/></div>
+          <div class="fg"><label class="fl">Confirmar senha</label><input type="password" id="cfg-conf-senha" class="fi" placeholder="••••••••"/></div>
         </div>
       </div>
       <div class="fs">
         <div class="fst">Empresa</div>
-        <div class="fg"><label class="fl">Nome do painel</label><input type="text" class="fi" placeholder="Ex: Painel Financeiro"/></div>
-        <div class="fg"><label class="fl">Subtítulo</label><input type="text" class="fi" placeholder="Ex: Fechamento de Caixa Mensal"/></div>
+        <div class="fg"><label class="fl">Nome do painel</label><input type="text" id="cfg-nome-painel" class="fi" placeholder="Ex: Painel Financeiro"/></div>
+        <div class="fg"><label class="fl">Subtítulo</label><input type="text" id="cfg-subtitulo" class="fi" placeholder="Ex: Fechamento de Caixa Mensal"/></div>
       </div>
       <div class="fs">
         <div class="fst">Notificações</div>
-        <div class="fg"><label class="fl">E-mail para alertas</label><input type="email" class="fi" placeholder="seu@email.com"/></div>
+        <div class="fg"><label class="fl">E-mail para alertas</label><input type="email" id="cfg-email-alertas" class="fi" placeholder="seu@email.com"/></div>
         <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:#374151;">
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked/> Alertar quando saídas ultrapassarem 80% das entradas</label>
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked/> Lembrete de fechamento mensal</label>
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox"/> Relatório semanal por e-mail</label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="cfg-alerta-saidas" checked/> Alertar quando saídas ultrapassarem 80% das entradas</label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="cfg-lembrete-fechamento" checked/> Lembrete de fechamento mensal</label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="cfg-relatorio-semanal"/> Relatório semanal por e-mail</label>
         </div>
       </div>
       <div>
         <div class="fst">Contas bancárias</div>
         <div class="tw" style="margin-top:12px;"><table>
           <thead><tr><th>Banco</th><th>Agência / Conta</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>Banco Inter</td><td>0001-9 / 5046862-6</td><td><span class="badge verde">✓ Ativa</span></td></tr>
-          </tbody>
+          <tbody id="tbody-contas"><tr><td colspan="3" class="empty">Carregando...</td></tr></tbody>
         </table></div>
       </div>
     </div>
@@ -606,6 +604,7 @@ function irPara(p,el){
   if(p==='lancamentos') { atualizarSelectCatsLanc(); filtrarLanc(); }
   if(p==='fechamentos') renderFechamentos();
   if(p==='pendentes') renderPendentes();
+  if(p==='configuracoes') carregarConfig();
 }
 
 function renderFechamentos(){
@@ -1362,25 +1361,74 @@ function atualizarSelectCatsLanc(){
 // ══════════════════════════════════════════════
 // CONFIGURAÇÕES
 // ══════════════════════════════════════════════
-function salvarConfig(){
-  toast('Configurações salvas com sucesso!','sucesso');
+let CFG = {}; // cache local das configurações
+
+async function carregarConfig() {
+  // Carrega configurações do banco
+  const { data: cfgRows } = await sb.from('configuracoes').select('*');
+  CFG = {};
+  (cfgRows || []).forEach(r => CFG[r.chave] = r.valor);
+
+  // Preenche campos
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
+  const chk = (id, val) => { const el = document.getElementById(id); if(el) el.checked = val === 'true'; };
+  set('cfg-nome-painel',   CFG.nome_painel || 'Painel Financeiro');
+  set('cfg-subtitulo',     CFG.subtitulo   || 'Fechamento de Caixa');
+  set('cfg-email-alertas', CFG.email_alertas || '');
+  chk('cfg-alerta-saidas',       CFG.alerta_saidas);
+  chk('cfg-lembrete-fechamento', CFG.lembrete_fechamento);
+  chk('cfg-relatorio-semanal',   CFG.relatorio_semanal);
+
+  // Email de acesso via Auth
+  const { data: { user } } = await sb.auth.getUser();
+  const emailEl = document.getElementById('cfg-email-acesso');
+  if(emailEl && user) emailEl.value = user.email;
+
+  // Carrega contas bancárias
+  const { data: contas } = await sb.from('contas').select('*').order('created_at');
+  const tbody = document.getElementById('tbody-contas');
+  if(tbody) {
+    tbody.innerHTML = (contas || []).length
+      ? (contas || []).map(c => `<tr>
+          <td>${c.banco}</td>
+          <td>${c.agencia ? c.agencia + ' / ' + (c.numero||'') : '—'}</td>
+          <td><span class="badge ${c.status==='ativa'?'verde':'cinza'}">${c.status==='ativa'?'✓ Ativa':'Pausada'}</span></td>
+        </tr>`).join('')
+      : '<tr><td colspan="3" class="empty">Nenhuma conta cadastrada</td></tr>';
+  }
 }
-function editarConta(banco,tipo){
-  abrirModal(`Editar conta — ${banco}`,`
-    <div class="fg"><label class="fl">Banco</label><input type="text" id="cnt-banco" class="fi" value="${banco}"/></div>
-    <div class="fg"><label class="fl">Tipo</label>
-      <select id="cnt-tipo" class="fi">
-        <option${tipo==='Conta Corrente'?' selected':''}>Conta Corrente</option>
-        <option${tipo==='Cartão de Crédito'?' selected':''}>Cartão de Crédito</option>
-        <option>Conta Poupança</option>
-      </select></div>
-    <div class="fg"><label class="fl">Status</label>
-      <select id="cnt-status" class="fi">
-        <option>Ativa</option><option>Pausada</option>
-      </select></div>`,
-    `<button class="btn bs" onclick="fecharModal()">Cancelar</button>
-     <button class="btn bp" onclick="fecharModal();toast('Conta atualizada!','sucesso')">Salvar</button>`
-  );
+
+async function salvarConfig() {
+  const btn = document.getElementById('btn-salvar-cfg');
+  btn.textContent = 'Salvando...'; btn.disabled = true;
+
+  // Salva configurações chave-valor no banco
+  const updates = [
+    { chave: 'nome_painel',         valor: document.getElementById('cfg-nome-painel')?.value || '' },
+    { chave: 'subtitulo',           valor: document.getElementById('cfg-subtitulo')?.value || '' },
+    { chave: 'email_alertas',       valor: document.getElementById('cfg-email-alertas')?.value || '' },
+    { chave: 'alerta_saidas',       valor: String(document.getElementById('cfg-alerta-saidas')?.checked) },
+    { chave: 'lembrete_fechamento', valor: String(document.getElementById('cfg-lembrete-fechamento')?.checked) },
+    { chave: 'relatorio_semanal',   valor: String(document.getElementById('cfg-relatorio-semanal')?.checked) },
+  ];
+  for (const u of updates) {
+    await sb.from('configuracoes').upsert({ ...u, updated_at: new Date().toISOString() }, { onConflict: 'chave' });
+  }
+
+  // Atualiza senha se preenchida
+  const novaSenha = document.getElementById('cfg-nova-senha')?.value;
+  const confSenha = document.getElementById('cfg-conf-senha')?.value;
+  if (novaSenha) {
+    if (novaSenha.length < 6) { toast('Senha deve ter pelo menos 6 caracteres','erro'); btn.textContent='Salvar alterações'; btn.disabled=false; return; }
+    if (novaSenha !== confSenha) { toast('As senhas não coincidem','erro'); btn.textContent='Salvar alterações'; btn.disabled=false; return; }
+    const { error } = await sb.auth.updateUser({ password: novaSenha });
+    if (error) { toast('Erro ao atualizar senha: ' + error.message,'erro'); btn.textContent='Salvar alterações'; btn.disabled=false; return; }
+    document.getElementById('cfg-nova-senha').value = '';
+    document.getElementById('cfg-conf-senha').value = '';
+  }
+
+  btn.textContent = 'Salvar alterações'; btn.disabled = false;
+  toast('Configurações salvas com sucesso!','sucesso');
 }
 
 // ══════════════════════════════════════════════
@@ -1469,7 +1517,7 @@ async function salvarNovaSenha() {
 // INIT
 // ══════════════════════════════════════════════
 async function iniciarDashboard() {
-  await carregarDados();
+  await Promise.all([carregarDados(), carregarConfig()]);
   initCharts();
   const meses = [...new Set(LANCS.map(l=>l.mes))].sort().reverse();
   const mesInicial = meses[0] || '2026-04';
