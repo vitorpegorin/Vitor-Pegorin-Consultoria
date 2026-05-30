@@ -504,7 +504,17 @@ tbody tr:hover td{background:#f9fafb;}
 // ══════════════════════════════════════════════
 const SUPA_URL  = 'https://keyhwqorneoqlxehtevq.supabase.co';
 const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtleWh3cW9ybmVvcWx4ZWh0ZXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMjE2OTUsImV4cCI6MjA5NTY5NzY5NX0.z_LQ38ikdbVneKN9mNbneh7chgjBUvkZTlAdQRA0ju4';
-const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// Fetch com timeout de 15s — evita travamento em arquivos locais ou rede lenta
+function fetchComTimeout(url, options) {
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort(), 15000);
+  return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(id));
+}
+
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY, {
+  global: { fetch: fetchComTimeout }
+});
 
 // ══════════════════════════════════════════════
 // DADOS (cache local — preenchido pelo Supabase)
