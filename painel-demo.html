@@ -540,11 +540,12 @@ function buildDados(mes) {
   const groupBy = arr => {
     const map = {};
     arr.forEach(l => {
-      if (!map[l.categoria]) {
-        const cat = [...CAT_ENTRADA,...CAT_SAIDA].find(c => c.n === l.categoria);
-        map[l.categoria] = {n: l.categoria, v: 0, c: cat?.c || '#94a3b8'};
+      const k = l.cat || 'Outros';
+      if (!map[k]) {
+        const catObj = [...CAT_ENTRADA,...CAT_SAIDA].find(c => c.n === k);
+        map[k] = {n: k, v: 0, c: catObj?.c || '#94a3b8'};
       }
-      map[l.categoria].v += Number(l.valor);
+      map[k].v += Number(l.valor);
     });
     return Object.values(map);
   };
