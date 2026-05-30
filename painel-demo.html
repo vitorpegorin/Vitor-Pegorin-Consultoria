@@ -238,7 +238,6 @@ tbody tr:hover td{background:#f9fafb;}
     </div>
     <div class="card"><h3>Últimos Lançamentos</h3><div id="dash-lanc"></div></div>
   </div>
-  <div class="demo-footer">⚠ Dados fictícios — apenas para demonstração visual</div>
 </div>
 
 <!-- ── LANÇAMENTOS ── -->
@@ -288,7 +287,6 @@ tbody tr:hover td{background:#f9fafb;}
       <tbody id="tbody-lanc"></tbody>
     </table></div>
   </div>
-  <div class="demo-footer" style="margin-top:16px;">⚠ Dados fictícios — apenas para demonstração visual</div>
 </div>
 
 <!-- ── IMPORTAR ── -->
@@ -371,7 +369,6 @@ tbody tr:hover td{background:#f9fafb;}
       </tbody>
     </table></div>
   </div>
-  <div class="demo-footer" style="margin-top:16px;">⚠ Dados fictícios — apenas para demonstração visual</div>
 </div>
 
 <!-- ── FECHAMENTOS ── -->
@@ -408,7 +405,6 @@ tbody tr:hover td{background:#f9fafb;}
       </tbody>
     </table></div>
   </div>
-  <div class="demo-footer" style="margin-top:16px;">⚠ Dados fictícios — apenas para demonstração visual</div>
 </div>
 
 <!-- ── CATEGORIAS ── -->
@@ -444,7 +440,6 @@ tbody tr:hover td{background:#f9fafb;}
       </table></div>
     </div>
   </div>
-  <div class="demo-footer" style="margin-top:16px;">⚠ Dados fictícios — apenas para demonstração visual</div>
 </div>
 
 <!-- ── CONFIGURAÇÕES ── -->
@@ -491,7 +486,6 @@ tbody tr:hover td{background:#f9fafb;}
       </div>
     </div>
   </div>
-  <div class="demo-footer">⚠ Dados fictícios — apenas para demonstração visual</div>
 </div>
 
 </main>
@@ -553,11 +547,16 @@ function buildDados(mes) {
 }
 
 function buildHist() {
-  const meses = ['2025-11','2025-12','2026-01','2026-02','2026-03','2026-04'];
-  const labels = ['Nov/25','Dez/25','Jan/26','Fev/26','Mar/26','Abr/26'];
-  return meses.map((m, i) => {
+  // Últimos 6 meses com dados, ou os 6 meses anteriores ao mês atual
+  const mesesComDados = [...new Set(LANCS.map(l => l.mes))].sort();
+  const todosMeses = Object.keys(MNOME).sort();
+  const mesAtual = document.getElementById('mes-select')?.value || todosMeses[0];
+  const idxAtual = todosMeses.indexOf(mesAtual);
+  const ultimos6 = todosMeses.slice(Math.max(0, idxAtual - 5), idxAtual + 1);
+  return ultimos6.map(m => {
     const d = buildDados(m);
-    return {l: labels[i], e: d.e, s: d.s};
+    const label = MNOME[m].replace(' 20','\'').replace(/^\w+/,s=>s.slice(0,3));
+    return {l: label, e: d.e, s: d.s};
   });
 }
 
@@ -604,7 +603,12 @@ function irPara(p,el){
   document.querySelectorAll('.nl').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   el.classList.add('active');
-  if(p==='dashboard'&&!chartBarras)initCharts();
+  if(p==='dashboard'){
+    if(!chartBarras) initCharts();
+    else { const mes=document.getElementById('mes-select').value; trocarMes(mes); }
+  }
+  if(p==='categorias') renderTabelaCats();
+  if(p==='lancamentos') { atualizarSelectCatsLanc(); filtrarLanc(); }
 }
 
 // ══════════════════════════════════════════════
@@ -626,6 +630,12 @@ async function carregarDados() {
 }
 
 function initCharts(){
+  // Usa o mês mais recente com dados, ou o selecionado
+  const mesesComDados = [...new Set(LANCS.map(l => l.mes))].sort().reverse();
+  const mesInicial = mesesComDados[0] || '2026-04';
+  const sel = document.getElementById('mes-select');
+  if (sel) sel.value = mesInicial;
+
   const hist = buildHist();
   chartBarras=new Chart(document.getElementById('chart-barras').getContext('2d'),{
     type:'bar',
@@ -637,13 +647,13 @@ function initCharts(){
       plugins:{legend:{labels:{font:{size:12}}}},
       scales:{y:{ticks:{callback:v=>`R$${(v/1000).toFixed(0)}k`,font:{size:11}},grid:{color:'#f3f4f6'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}
   });
-  const d04 = buildDados('2026-04');
-  chartPS=mkPizza('chart-ps',d04.cs);
-  chartPE=mkPizza('chart-pe',d04.ce);
-  renderLeg('leg-s',d04.cs);
-  renderLeg('leg-e',d04.ce);
-  atualizarKPIs('2026-04');
-  renderDashLanc('2026-04');
+  const d = buildDados(mesInicial);
+  chartPS=mkPizza('chart-ps',d.cs);
+  chartPE=mkPizza('chart-pe',d.ce);
+  renderLeg('leg-s',d.cs);
+  renderLeg('leg-e',d.ce);
+  atualizarKPIs(mesInicial);
+  renderDashLanc(mesInicial);
 }
 
 function mkPizza(id,cats){
@@ -768,9 +778,7 @@ function abrirModalNovoLanc(){
     <div class="fg"><label class="fl">Categoria</label><select id="nl-cat" class="fi">${catOptions()}</select></div>
     <div class="fg"><label class="fl">Mês de referência</label>
       <select id="nl-mes" class="fi">
-        <option value="2026-04">Abril 2026</option><option value="2026-03">Março 2026</option>
-        <option value="2026-02">Fevereiro 2026</option><option value="2026-01">Janeiro 2026</option>
-        <option value="2025-12">Dezembro 2025</option><option value="2025-11">Novembro 2025</option>
+        ${Object.entries(MNOME).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}
       </select></div>`,
     `<button class="btn bs" onclick="fecharModal()">Cancelar</button>
      <button class="btn bp" onclick="salvarNovoLanc()">Salvar</button>`
@@ -811,7 +819,7 @@ function editarLanc(id){
     </div>
     <div class="fg"><label class="fl">Categoria</label><select id="el-cat" class="fi">${catOptions(l.cat)}</select></div>`,
     `<button class="btn bs" onclick="fecharModal()">Cancelar</button>
-     <button class="btn bp" onclick="salvarEdicaoLanc(${id})">Salvar</button>`
+     <button class="btn bp" onclick="salvarEdicaoLanc('${id}')">Salvar</button>`
   );
 }
 
@@ -1216,8 +1224,52 @@ function editarCategoria(nome,cor,tipo){
       <div class="fg"><label class="fl">Cor</label><input type="color" id="ec-cor" class="fi" value="${cor}" style="height:38px;padding:4px;cursor:pointer;"/></div>
     </div>`,
     `<button class="btn bs" onclick="fecharModal()">Cancelar</button>
-     <button class="btn bp" onclick="fecharModal();toast('Categoria atualizada!','sucesso')">Salvar</button>`
+     <button class="btn bd" onclick="excluirCategoria('${nome}')">Excluir</button>
+     <button class="btn bp" onclick="salvarEdicaoCategoria('${nome}')">Salvar</button>`
   );
+}
+
+async function salvarEdicaoCategoria(nomeAntigo){
+  const nome=document.getElementById('ec-nome').value.trim();
+  const tipo=document.getElementById('ec-tipo').value;
+  const cor=document.getElementById('ec-cor').value;
+  if(!nome){toast('Informe o nome','erro');return;}
+  const {error}=await sb.from('categorias').update({nome,tipo,cor}).eq('nome',nomeAntigo);
+  if(error){toast('Erro ao atualizar','erro');return;}
+  await carregarDados();
+  renderTabelaCats();
+  fecharModal(); toast('Categoria atualizada!','sucesso');
+}
+
+async function excluirCategoria(nome){
+  if(!confirm(`Excluir a categoria "${nome}"?`))return;
+  await sb.from('categorias').delete().eq('nome',nome);
+  await carregarDados();
+  renderTabelaCats();
+  fecharModal(); toast('Categoria excluída');
+}
+
+function renderTabelaCats(){
+  const tbE=document.getElementById('tbody-cat-e');
+  const tbS=document.getElementById('tbody-cat-s');
+  if(!tbE||!tbS)return;
+  const rowCat=(c,tipo)=>`<tr>
+    <td><span class="cc" style="background:${c.c};"></span></td>
+    <td>${c.n}</td>
+    <td>${LANCS.filter(l=>l.cat===c.n).length}</td>
+    <td class="${tipo==='entrada'?'ve':'vs'}">${fmt(LANCS.filter(l=>l.cat===c.n).reduce((s,l)=>s+l.valor,0))}</td>
+    <td><button class="btn bs" style="padding:3px 8px;font-size:11px;" onclick="editarCategoria('${c.n}','${c.c}','${tipo}')">Editar</button></td>
+  </tr>`;
+  tbE.innerHTML=CAT_ENTRADA.length?CAT_ENTRADA.map(c=>rowCat(c,'entrada')).join(''):'<tr><td colspan="5" class="empty">Nenhuma categoria</td></tr>';
+  tbS.innerHTML=CAT_SAIDA.length?CAT_SAIDA.map(c=>rowCat(c,'saida')).join(''):'<tr><td colspan="5" class="empty">Nenhuma categoria</td></tr>';
+}
+
+function atualizarSelectCatsLanc(){
+  const sel=document.getElementById('f-cat');
+  if(!sel)return;
+  const val=sel.value;
+  sel.innerHTML='<option value="">Todas as categorias</option>'+
+    [...CAT_ENTRADA,...CAT_SAIDA].map(c=>`<option value="${c.n}"${val===c.n?' selected':''}>${c.n}</option>`).join('');
 }
 
 // ══════════════════════════════════════════════
@@ -1250,7 +1302,13 @@ function editarConta(banco,tipo){
 window.addEventListener('DOMContentLoaded', async ()=>{
   await carregarDados();
   initCharts();
-  renderTabelaLanc(LANCS.filter(l=>l.mes==='2026-04'));
+  const meses = [...new Set(LANCS.map(l=>l.mes))].sort().reverse();
+  const mesInicial = meses[0] || '2026-04';
+  const fMes = document.getElementById('f-mes');
+  if(fMes) fMes.value = mesInicial;
+  atualizarSelectCatsLanc();
+  renderTabelaLanc(LANCS.filter(l=>l.mes===mesInicial));
+  renderTabelaCats();
 });
 </script>
 </body>
