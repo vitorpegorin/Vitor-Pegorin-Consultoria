@@ -255,15 +255,6 @@ tbody tr:hover td{background:#f9fafb;}
     </select>
     <select id="f-cat" onchange="filtrarLanc()">
       <option value="">Todas as categorias</option>
-      <option>Mensalidade Presencial</option>
-      <option>Pagamento de Consultoria</option>
-      <option>Outros (entrada)</option>
-      <option>Custo de Equipe</option>
-      <option>Imposto</option>
-      <option>Cursos e Mentorias</option>
-      <option>Equipamento Audiovisual</option>
-      <option>Ferramentas Digitais</option>
-      <option>Anúncios</option>
     </select>
     <select id="f-mes" onchange="filtrarLanc()">
       <option value="2026-12">Dezembro 2026</option>
@@ -329,44 +320,12 @@ tbody tr:hover td{background:#f9fafb;}
 <!-- ── PENDENTES ── -->
 <div class="page" id="page-pendentes">
   <div class="ph">
-    <div><h2>Pendentes</h2><p>Lançamentos aguardando categorização ou confirmação</p></div>
-    <button class="btn bs" onclick="resolverTodos()">Resolver todos</button>
+    <div><h2>Pendentes</h2><p>Lançamentos sem categoria definida</p></div>
   </div>
   <div class="card">
     <div class="tw"><table>
-      <thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Origem</th><th>Situação</th><th>Ações</th></tr></thead>
-      <tbody id="tbody-pend">
-        <tr id="pend-1">
-          <td>22/04/2026</td><td>Transferência recebida — PIX</td>
-          <td class="ve">+ R$ 4.200,00</td><td><span class="badge cinza">Nubank</span></td>
-          <td><span class="badge amarelo">Sem categoria</span></td>
-          <td><button class="btn bp" style="padding:4px 10px;font-size:12px;" onclick="abrirCategorizar('pend-1','Transferência recebida — PIX')">Categorizar</button></td>
-        </tr>
-        <tr id="pend-2">
-          <td>20/04/2026</td><td>Compra online — Marketplace</td>
-          <td class="vs">− R$ 890,00</td><td><span class="badge cinza">Cartão Amex</span></td>
-          <td><span class="badge amarelo">Sem categoria</span></td>
-          <td><button class="btn bp" style="padding:4px 10px;font-size:12px;" onclick="abrirCategorizar('pend-2','Compra online — Marketplace')">Categorizar</button></td>
-        </tr>
-        <tr id="pend-3">
-          <td>18/04/2026</td><td>Depósito — origem desconhecida</td>
-          <td class="ve">+ R$ 1.500,00</td><td><span class="badge cinza">Itaú</span></td>
-          <td><span class="badge azul">Aguardando confirmação</span></td>
-          <td><button class="btn bs" style="padding:4px 10px;font-size:12px;" onclick="confirmarPendente('pend-3')">Confirmar</button></td>
-        </tr>
-        <tr id="pend-4">
-          <td>15/04/2026</td><td>Serviço contratado — Freelancer</td>
-          <td class="vs">− R$ 2.100,00</td><td><span class="badge cinza">Nubank</span></td>
-          <td><span class="badge amarelo">Sem categoria</span></td>
-          <td><button class="btn bp" style="padding:4px 10px;font-size:12px;" onclick="abrirCategorizar('pend-4','Serviço contratado — Freelancer')">Categorizar</button></td>
-        </tr>
-        <tr id="pend-5">
-          <td>12/04/2026</td><td>Estorno — Cliente cancelou</td>
-          <td class="vs">− R$ 650,00</td><td><span class="badge cinza">Nubank</span></td>
-          <td><span class="badge azul">Aguardando confirmação</span></td>
-          <td><button class="btn bs" style="padding:4px 10px;font-size:12px;" onclick="confirmarPendente('pend-5')">Confirmar</button></td>
-        </tr>
-      </tbody>
+      <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Valor</th><th>Ações</th></tr></thead>
+      <tbody id="tbody-pend"></tbody>
     </table></div>
   </div>
 </div>
@@ -375,34 +334,11 @@ tbody tr:hover td{background:#f9fafb;}
 <div class="page" id="page-fechamentos">
   <div class="ph">
     <div><h2>Fechamentos</h2><p>Resumo mensal de caixa</p></div>
-    <button class="btn bp" onclick="abrirModalFechamento()">+ Novo Fechamento</button>
   </div>
   <div class="card">
     <div class="tw"><table>
-      <thead><tr><th>Mês</th><th>Entradas</th><th>Saídas</th><th>Resultado</th><th>Margem</th><th>Status</th><th>Ações</th></tr></thead>
-      <tbody>
-        <tr><td><strong>Dezembro 2026</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="badge cinza">Aguardando</span></td><td>—</td></tr>
-        <tr><td><strong>Novembro 2026</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="badge cinza">Aguardando</span></td><td>—</td></tr>
-        <tr><td><strong>Outubro 2026</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="badge cinza">Aguardando</span></td><td>—</td></tr>
-        <tr><td><strong>Setembro 2026</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="badge cinza">Aguardando</span></td><td>—</td></tr>
-        <tr><td><strong>Agosto 2026</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="badge cinza">Aguardando</span></td><td>—</td></tr>
-        <tr><td><strong>Julho 2026</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="badge cinza">Aguardando</span></td><td>—</td></tr>
-        <tr><td><strong>Junho 2026</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="badge cinza">Aguardando</span></td><td>—</td></tr>
-        <tr><td><strong>Maio 2026</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="badge cinza">Aguardando</span></td><td>—</td></tr>
-        <tr><td><strong>Abril 2026</strong></td><td class="ve">R$ 68.300,00</td><td class="vs">R$ 41.200,00</td><td class="ve">R$ 27.100,00</td><td>39,7%</td><td><span class="badge azul">Em aberto</span></td>
-          <td style="display:flex;gap:6px;"><button class="btn bs" style="padding:4px 10px;font-size:12px;" onclick="verFechamento('Abril 2026','68300','41200')">Ver</button>
-          <button class="btn bp" style="padding:4px 10px;font-size:12px;" onclick="fecharMes('Abril 2026')">Fechar mês</button></td></tr>
-        <tr><td><strong>Março 2026</strong></td><td class="ve">R$ 61.400,00</td><td class="vs">R$ 38.900,00</td><td class="ve">R$ 22.500,00</td><td>36,6%</td><td><span class="badge verde">✓ Fechado</span></td>
-          <td><button class="btn bs" style="padding:4px 10px;font-size:12px;" onclick="verFechamento('Março 2026','61400','38900')">Ver</button></td></tr>
-        <tr><td><strong>Fevereiro 2026</strong></td><td class="ve">R$ 57.800,00</td><td class="vs">R$ 36.200,00</td><td class="ve">R$ 21.600,00</td><td>37,4%</td><td><span class="badge verde">✓ Fechado</span></td>
-          <td><button class="btn bs" style="padding:4px 10px;font-size:12px;" onclick="verFechamento('Fevereiro 2026','57800','36200')">Ver</button></td></tr>
-        <tr><td><strong>Janeiro 2026</strong></td><td class="ve">R$ 53.100,00</td><td class="vs">R$ 34.700,00</td><td class="ve">R$ 18.400,00</td><td>34,7%</td><td><span class="badge verde">✓ Fechado</span></td>
-          <td><button class="btn bs" style="padding:4px 10px;font-size:12px;" onclick="verFechamento('Janeiro 2026','53100','34700')">Ver</button></td></tr>
-        <tr><td><strong>Dezembro 2025</strong></td><td class="ve">R$ 62.500,00</td><td class="vs">R$ 39.800,00</td><td class="ve">R$ 22.700,00</td><td>36,3%</td><td><span class="badge verde">✓ Fechado</span></td>
-          <td><button class="btn bs" style="padding:4px 10px;font-size:12px;" onclick="verFechamento('Dezembro 2025','62500','39800')">Ver</button></td></tr>
-        <tr><td><strong>Novembro 2025</strong></td><td class="ve">R$ 48.200,00</td><td class="vs">R$ 31.400,00</td><td class="ve">R$ 16.800,00</td><td>34,9%</td><td><span class="badge verde">✓ Fechado</span></td>
-          <td><button class="btn bs" style="padding:4px 10px;font-size:12px;" onclick="verFechamento('Novembro 2025','48200','31400')">Ver</button></td></tr>
-      </tbody>
+      <thead><tr><th>Mês</th><th>Entradas</th><th>Saídas</th><th>Resultado</th><th>Margem</th><th>Ações</th></tr></thead>
+      <tbody id="tbody-fechamentos"></tbody>
     </table></div>
   </div>
 </div>
@@ -475,12 +411,9 @@ tbody tr:hover td{background:#f9fafb;}
       <div>
         <div class="fst">Contas bancárias</div>
         <div class="tw" style="margin-top:12px;"><table>
-          <thead><tr><th>Banco</th><th>Tipo</th><th>Status</th><th></th></tr></thead>
+          <thead><tr><th>Banco</th><th>Agência / Conta</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td>Nubank</td><td>Conta Corrente</td><td><span class="badge verde">✓ Ativa</span></td><td><button class="btn bs" style="padding:3px 8px;font-size:11px;" onclick="editarConta('Nubank','Conta Corrente')">Editar</button></td></tr>
-            <tr><td>Itaú</td><td>Conta Corrente</td><td><span class="badge verde">✓ Ativa</span></td><td><button class="btn bs" style="padding:3px 8px;font-size:11px;" onclick="editarConta('Itaú','Conta Corrente')">Editar</button></td></tr>
-            <tr><td>Amex</td><td>Cartão de Crédito</td><td><span class="badge verde">✓ Ativa</span></td><td><button class="btn bs" style="padding:3px 8px;font-size:11px;" onclick="editarConta('Amex','Cartão de Crédito')">Editar</button></td></tr>
-            <tr><td>Elo</td><td>Cartão de Crédito</td><td><span class="badge amarelo">Pausada</span></td><td><button class="btn bs" style="padding:3px 8px;font-size:11px;" onclick="editarConta('Elo','Cartão de Crédito')">Editar</button></td></tr>
+            <tr><td>Banco Inter</td><td>0001-9 / 5046862-6</td><td><span class="badge verde">✓ Ativa</span></td></tr>
           </tbody>
         </table></div>
       </div>
@@ -609,6 +542,94 @@ function irPara(p,el){
   }
   if(p==='categorias') renderTabelaCats();
   if(p==='lancamentos') { atualizarSelectCatsLanc(); filtrarLanc(); }
+  if(p==='fechamentos') renderFechamentos();
+  if(p==='pendentes') renderPendentes();
+}
+
+function renderFechamentos(){
+  const tbody=document.getElementById('tbody-fechamentos');
+  if(!tbody)return;
+  const mesesComDados=[...new Set(LANCS.map(l=>l.mes))].sort().reverse();
+  if(!mesesComDados.length){
+    tbody.innerHTML='<tr><td colspan="6" class="empty">Nenhum lançamento importado ainda</td></tr>';
+    return;
+  }
+  tbody.innerHTML=mesesComDados.map(m=>{
+    const d=buildDados(m);
+    const res=d.e-d.s;
+    const mrg=d.e>0?((res/d.e)*100).toFixed(1)+'%':'—';
+    const nome=MNOME[m]||m;
+    return`<tr>
+      <td><strong>${nome}</strong></td>
+      <td class="ve">${fmt(d.e)}</td>
+      <td class="vs">${fmt(d.s)}</td>
+      <td class="${res>=0?'ve':'vs'}">${fmt(res)}</td>
+      <td>${mrg}</td>
+      <td><button class="btn bs" style="padding:4px 10px;font-size:12px;" onclick="verFechamentoReal('${m}')">Ver detalhes</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function verFechamentoReal(mes){
+  const d=buildDados(mes),nome=MNOME[mes]||mes;
+  const res=d.e-d.s,mrg=d.e>0?((res/d.e)*100).toFixed(1):0;
+  abrirModal(`Fechamento — ${nome}`,`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div style="background:#f0fdf4;border-radius:10px;padding:14px;border-left:3px solid #10b981;">
+        <div style="font-size:11px;color:#6b7280;font-weight:600;">ENTRADAS</div>
+        <div style="font-size:20px;font-weight:700;color:#065f46;margin-top:4px;">${fmt(d.e)}</div>
+      </div>
+      <div style="background:#fef2f2;border-radius:10px;padding:14px;border-left:3px solid #ef4444;">
+        <div style="font-size:11px;color:#6b7280;font-weight:600;">SAÍDAS</div>
+        <div style="font-size:20px;font-weight:700;color:#991b1b;margin-top:4px;">${fmt(d.s)}</div>
+      </div>
+      <div style="background:#eff6ff;border-radius:10px;padding:14px;border-left:3px solid #3b82f6;">
+        <div style="font-size:11px;color:#6b7280;font-weight:600;">RESULTADO</div>
+        <div style="font-size:20px;font-weight:700;color:#1e40af;margin-top:4px;">${fmt(res)}</div>
+      </div>
+      <div style="background:#f0fdf4;border-radius:10px;padding:14px;border-left:3px solid #10b981;">
+        <div style="font-size:11px;color:#6b7280;font-weight:600;">MARGEM</div>
+        <div style="font-size:20px;font-weight:700;color:#065f46;margin-top:4px;">${mrg}%</div>
+      </div>
+    </div>`,
+    `<button class="btn bs" onclick="fecharModal()">Fechar</button>`
+  );
+}
+
+function renderPendentes(){
+  const tbody=document.getElementById('tbody-pend');
+  if(!tbody)return;
+  const pendentes=LANCS.filter(l=>!l.cat||l.cat==='Outros');
+  tbody.innerHTML=pendentes.length
+    ?pendentes.map((l,i)=>`<tr id="pend-r-${i}">
+        <td>${l.data}</td>
+        <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.desc}</td>
+        <td><span class="badge ${l.tipo}">${l.tipo==='entrada'?'Entrada':'Saída'}</span></td>
+        <td class="${l.tipo==='entrada'?'ve':'vs'}">${fmt(l.valor)}</td>
+        <td><button class="btn bp" style="padding:4px 10px;font-size:12px;" onclick="recategorizarLanc('${l.id}')">Recategorizar</button></td>
+      </tr>`).join('')
+    :'<tr><td colspan="5" class="empty">Nenhum lançamento pendente</td></tr>';
+}
+
+function recategorizarLanc(id){
+  const l=LANCS.find(x=>x.id===id);if(!l)return;
+  const opts=[...CAT_ENTRADA,...CAT_SAIDA].map(c=>`<option${c.n===l.cat?' selected':''}>${c.n}</option>`).join('');
+  abrirModal('Recategorizar',`
+    <p style="font-size:13px;color:#6b7280;margin-bottom:16px;">${l.desc}</p>
+    <div class="fg"><label class="fl">Categoria</label><select id="rc-cat" class="fi">${opts}</select></div>`,
+    `<button class="btn bs" onclick="fecharModal()">Cancelar</button>
+     <button class="btn bp" onclick="salvarRecategorizacao('${id}')">Salvar</button>`
+  );
+}
+
+async function salvarRecategorizacao(id){
+  const cat=document.getElementById('rc-cat').value;
+  const {error}=await sb.from('lancamentos').update({categoria:cat}).eq('id',id);
+  if(error){toast('Erro ao salvar','erro');return;}
+  await carregarDados();
+  renderPendentes();
+  fecharModal();
+  toast('Categoria atualizada!','sucesso');
 }
 
 // ══════════════════════════════════════════════
@@ -666,18 +687,20 @@ function mkPizza(id,cats){
 
 function renderLeg(id,cats){
   const total=cats.reduce((s,c)=>s+c.v,0);
-  document.getElementById(id).innerHTML=cats.slice().sort((a,b)=>b.v-a.v).map(c=>`
-    <div class="leg-item">
-      <span class="leg-dot" style="background:${c.c}"></span>
-      <span class="leg-nome">${c.n}</span>
-      <span class="leg-pct">${((c.v/total)*100).toFixed(1)}%</span>
-      <span class="leg-val">${fmt(c.v)}</span>
-    </div>`).join('');
+  document.getElementById(id).innerHTML=cats.length
+    ?cats.slice().sort((a,b)=>b.v-a.v).map(c=>`
+      <div class="leg-item">
+        <span class="leg-dot" style="background:${c.c}"></span>
+        <span class="leg-nome">${c.n}</span>
+        <span class="leg-pct">${total>0?((c.v/total)*100).toFixed(1):'0.0'}%</span>
+        <span class="leg-val">${fmt(c.v)}</span>
+      </div>`).join('')
+    :'<div class="empty" style="padding:16px">Sem dados</div>';
 }
 
 function atualizarKPIs(mes){
   const d=buildDados(mes),ant=MANT[mes]?buildDados(MANT[mes]):null;
-  const res=d.e-d.s,mrg=(res/d.e)*100,pct=(d.s/d.e)*100;
+  const res=d.e-d.s,mrg=d.e>0?(res/d.e)*100:0,pct=d.e>0?(d.s/d.e)*100:0;
   document.getElementById('mes-label').textContent=MNOME[mes];
   document.getElementById('kpi-e').textContent=fmt(d.e);
   document.getElementById('kpi-s').textContent=fmt(d.s);
@@ -725,6 +748,11 @@ function trocarMes(mes){
   });
   renderLeg('leg-s',d.cs); renderLeg('leg-e',d.ce);
   renderDashLanc(mes);
+  const hist=buildHist();
+  chartBarras.data.labels=hist.map(d=>d.l);
+  chartBarras.data.datasets[0].data=hist.map(d=>d.e);
+  chartBarras.data.datasets[1].data=hist.map(d=>d.s);
+  chartBarras.update();
 }
 
 // ══════════════════════════════════════════════
@@ -776,10 +804,7 @@ function abrirModalNovoLanc(){
       <div class="fg"><label class="fl">Valor (R$)</label><input type="number" id="nl-valor" class="fi" placeholder="0,00" min="0" step="0.01"/></div>
     </div>
     <div class="fg"><label class="fl">Categoria</label><select id="nl-cat" class="fi">${catOptions()}</select></div>
-    <div class="fg"><label class="fl">Mês de referência</label>
-      <select id="nl-mes" class="fi">
-        ${Object.entries(MNOME).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}
-      </select></div>`,
+`,
     `<button class="btn bs" onclick="fecharModal()">Cancelar</button>
      <button class="btn bp" onclick="salvarNovoLanc()">Salvar</button>`
   );
@@ -791,7 +816,7 @@ async function salvarNovoLanc(){
   if(!desc){toast('Informe a descrição','erro');return;}
   if(!valor||valor<=0){toast('Informe um valor válido','erro');return;}
   const dataRaw=document.getElementById('nl-data').value;
-  const mes=document.getElementById('nl-mes').value;
+  const mes=dataRaw.slice(0,7); // deriva mês automaticamente da data (YYYY-MM)
   const {error}=await sb.from('lancamentos').insert({
     tipo:document.getElementById('nl-tipo').value,
     descricao:desc,
