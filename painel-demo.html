@@ -1011,7 +1011,9 @@ function mostrarPreviewImport(transacoes) {
   document.getElementById('preview-resumo').textContent =
     `${transacoes.length} transações — Entradas: ${fmt(entradas)} | Saídas: ${fmt(saidas)}`;
 
+  const CATS_DEFAULT = ['Mensalidade Presencial','Pagamento de Consultoria','Outros','Imposto','Anúncios','Ferramentas Digitais','Equipamento Audiovisual'];
   const allCats = [...CAT_ENTRADA, ...CAT_SAIDA].map(c => c.n);
+  if (!allCats.length) allCats.push(...CATS_DEFAULT);
   const opts = allCats.map(n => `<option>${n}</option>`).join('');
 
   document.getElementById('tbody-preview').innerHTML = transacoes.map((t, i) => `
