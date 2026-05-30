@@ -1144,25 +1144,38 @@ async function salvarImport() {
   const selecionados = _importBuffer.filter(t => t.selecionado);
   if (!selecionados.length) { toast('Nenhuma transação selecionada','erro'); return; }
   const btn = document.getElementById('btn-salvar-import');
-  btn.textContent = 'Salvando...';
+  btn.textContent = 'Salvando...'; btn.disabled = true;
 
-  // Apaga lançamentos existentes dos meses presentes no extrato (evita duplicatas)
-  const meses = [...new Set(selecionados.map(t => t.mes))];
-  for (const mes of meses) {
-    const { error: delErr } = await sb.from('lancamentos').delete().eq('mes', mes);
-    if (delErr) { toast('Erro ao limpar mês ' + mes + ': ' + delErr.message, 'erro'); btn.textContent = 'Salvar no banco'; return; }
+  try {
+    // Apaga lançamentos existentes dos meses presentes no extrato (evita duplicatas)
+    const meses = [...new Set(selecionados.map(t => t.mes))];
+    for (const mes of meses) {
+      const { error: delErr } = await sb.from('lancamentos').delete().eq('mes', mes);
+      if (delErr) throw new Error('Erro ao limpar mês ' + mes + ': ' + delErr.message);
+    }
+
+    const rows = selecionados.map(t => ({
+      tipo: t.tipo, descricao: t.desc, categoria: t.categoria,
+      data: t.data, mes: t.mes, valor: t.valor
+    }));
+
+    const { error } = await sb.from('lancamentos').insert(rows);
+    if (error) throw new Error('Erro ao inserir: ' + error.message + ' | Código: ' + error.code);
+
+    await carregarDados();
+    cancelarImport();
+    toast(`${rows.length} lançamentos importados com sucesso!`, 'sucesso');
+
+  } catch(e) {
+    console.error('[Import Error]', e);
+    abrirModal('Erro ao importar',
+      `<p style="font-size:14px;color:#dc2626;margin-bottom:12px;"><strong>${e.message}</strong></p>
+       <p style="font-size:12px;color:#6b7280;">Se o problema persistir, abra o console do navegador (F12 → Console) e me envie a mensagem de erro completa.</p>`,
+      `<button class="btn bs" onclick="fecharModal()">Fechar</button>`
+    );
+  } finally {
+    btn.textContent = 'Salvar no banco'; btn.disabled = false;
   }
-
-  const rows = selecionados.map(t => ({
-    tipo: t.tipo, descricao: t.desc, categoria: t.categoria,
-    data: t.data, mes: t.mes, valor: t.valor
-  }));
-  const { error } = await sb.from('lancamentos').insert(rows);
-  if (error) { toast('Erro ao salvar: ' + error.message, 'erro'); btn.textContent = 'Salvar no banco'; return; }
-  await carregarDados();
-  cancelarImport();
-  toast(`${rows.length} lançamentos importados com sucesso!`, 'sucesso');
-  btn.textContent = 'Salvar no banco';
 }
 
 // ══════════════════════════════════════════════
