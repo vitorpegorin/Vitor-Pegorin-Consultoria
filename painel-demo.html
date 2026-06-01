@@ -153,10 +153,60 @@ tbody tr:hover td{background:#f9fafb;}
 #toast.sucesso{background:#065f46;}
 #toast.erro{background:#991b1b;}
 
+/* ── FAB ── */
+.fab{position:fixed;bottom:28px;right:28px;width:52px;height:52px;border-radius:50%;background:#4f46e5;color:#fff;font-size:28px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(79,70,229,.4);z-index:50;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .15s;line-height:1;}
+.fab:hover{background:#4338ca;transform:scale(1.08);}
+/* ── Busca Global ── */
+#busca-global-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:flex-start;justify-content:center;padding-top:80px;}
+#busca-global-bg.open{display:flex;}
+.busca-box{background:#fff;border-radius:14px;width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden;margin:0 16px;}
+.busca-input-row{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid #f3f4f6;gap:10px;}
+#busca-global-input{flex:1;border:none;outline:none;font-size:15px;font-family:inherit;background:transparent;color:#111827;}
+#busca-global-results{max-height:360px;overflow-y:auto;padding:6px 0;}
+.busca-item{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;cursor:pointer;gap:12px;}
+.busca-item:hover{background:#f9fafb;}
+.busca-kbd{font-size:11px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:4px;padding:2px 6px;color:#9ca3af;white-space:nowrap;}
+/* ── Anual ── */
+.anual-wrap{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+.anual-barra{flex:1;min-width:38px;text-align:center;}
+.anual-col{background:#f0fdf4;border-radius:6px 6px 0 0;height:44px;display:flex;align-items:flex-end;overflow:hidden;}
+.anual-fill{width:100%;background:#10b981;transition:height .5s;}
+.anual-mes{font-size:10px;color:#9ca3af;margin-top:3px;}
+.anual-val{font-size:10px;font-weight:600;color:#065f46;}
 /* ── Misc ── */
 .empty{text-align:center;padding:40px;color:#9ca3af;font-size:13px;}
 .demo-footer{text-align:center;font-size:11px;color:#d1d5db;padding:8px 0 4px;}
 .mb16{margin-bottom:16px;}
+/* ══ DARK MODE ══ */
+body.dark{background:#0f172a;color:#e2e8f0;}
+body.dark .ph h2{color:#f1f5f9;} body.dark .ph p{color:#94a3b8;}
+body.dark .card{background:#1e293b;box-shadow:0 1px 3px rgba(0,0,0,.4);} body.dark .card h3{color:#e2e8f0;}
+body.dark .prog-card{background:#1e293b;} body.dark .prog-hdr{color:#94a3b8;}
+body.dark .prog-track{background:#334155;} body.dark .prog-scale{color:#64748b;}
+body.dark .anual-col{background:#0f2a1f;} body.dark .anual-mes{color:#64748b;} body.dark .anual-val{color:#4ade80;}
+body.dark table thead th{color:#64748b;border-color:#334155;}
+body.dark table tbody td{color:#cbd5e1;border-color:#1e293b;}
+body.dark table tbody tr:hover td{background:#334155;}
+body.dark select,body.dark input[type=text],body.dark input[type=email],body.dark input[type=password],body.dark input[type=number],body.dark input[type=date]{background:#1e293b;color:#e2e8f0;border-color:#475569;}
+body.dark textarea{background:#1e293b;color:#e2e8f0;border-color:#475569;}
+body.dark .fl{color:#cbd5e1;} body.dark .fst{color:#64748b;} body.dark .fs{border-color:#334155;}
+body.dark .kpi{background:#1e293b!important;}
+body.dark .kpi.verde{background:#052e16!important;} body.dark .kpi.verde .kv{color:#4ade80!important;}
+body.dark .kpi.vermelho{background:#450a0a!important;} body.dark .kpi.vermelho .kv{color:#f87171!important;}
+body.dark .kpi.azul{background:#0c1a2e!important;} body.dark .kpi.azul .kv{color:#60a5fa!important;}
+body.dark .kpi.amarelo{background:#2d1f00!important;} body.dark .kpi.amarelo .kv{color:#fbbf24!important;}
+body.dark .kl{color:#94a3b8;} body.dark .kvar.up{color:#4ade80;} body.dark .kvar.dn{color:#f87171;}
+body.dark .badge.cinza{background:#334155;color:#94a3b8;}
+body.dark .bs{background:#334155;color:#e2e8f0;} body.dark .bs:hover{background:#475569;}
+body.dark .upload-area{border-color:#475569;} body.dark .upload-area h4{color:#e2e8f0;}
+body.dark .upload-area:hover{border-color:#6366f1;background:#1e293b;}
+body.dark .modal{background:#1e293b;} body.dark .modal-hdr{border-color:#334155;} body.dark .modal-hdr h4{color:#f1f5f9;}
+body.dark .modal-footer{border-color:#334155;} body.dark .modal-close:hover{background:#334155;}
+body.dark .busca-box{background:#1e293b;} body.dark .busca-input-row{border-color:#334155;}
+body.dark #busca-global-input{color:#e2e8f0;} body.dark .busca-item:hover{background:#334155;}
+body.dark .busca-kbd{background:#334155;border-color:#475569;color:#94a3b8;}
+body.dark .ve{color:#4ade80!important;} body.dark .vs{color:#f87171!important;}
+body.dark .leg-nome{color:#94a3b8;} body.dark .leg-val{color:#e2e8f0;}
 
 /* ── Login ── */
 #login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%);z-index:9999;display:flex;align-items:center;justify-content:center;}
@@ -253,6 +303,13 @@ tbody tr:hover td{background:#f9fafb;}
     </div>
   </nav>
   <div class="sb-footer">
+    <button class="btn-sair" onclick="abrirBuscaGlobal()" style="color:#9ca3af;">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Buscar
+      <span style="margin-left:auto;font-size:10px;background:#374151;border:1px solid #4b5563;border-radius:3px;padding:1px 5px;letter-spacing:0;">Ctrl K</span>
+    </button>
+    <button class="btn-sair" id="btn-dark" onclick="toggleDark()">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span id="dark-label">Modo escuro</span>
+    </button>
     <button class="btn-sair" onclick="fazerLogout()">
       <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sair
     </button>
@@ -266,28 +323,17 @@ tbody tr:hover td{background:#f9fafb;}
 <div class="page active" id="page-dashboard">
   <div class="ph">
     <div><h2>Dashboard</h2><p id="mes-label">Abril 2026</p></div>
-    <select id="mes-select" onchange="trocarMes(this.value)">
-      <option value="2026-12">Dezembro 2026</option>
-      <option value="2026-11">Novembro 2026</option>
-      <option value="2026-10">Outubro 2026</option>
-      <option value="2026-09">Setembro 2026</option>
-      <option value="2026-08">Agosto 2026</option>
-      <option value="2026-07">Julho 2026</option>
-      <option value="2026-06">Junho 2026</option>
-      <option value="2026-05">Maio 2026</option>
-      <option value="2026-04" selected>Abril 2026</option>
-      <option value="2026-03">Março 2026</option>
-      <option value="2026-02">Fevereiro 2026</option>
-      <option value="2026-01">Janeiro 2026</option>
-      <option value="2025-12">Dezembro 2025</option>
-      <option value="2025-11">Novembro 2025</option>
-    </select>
+    <select id="mes-select" onchange="trocarMes(this.value)"></select>
   </div>
   <div class="kpi-grid">
     <div class="kpi verde"><div class="kl">Total de Entradas</div><div class="kv" id="kpi-e">—</div><div class="kvar" id="kpi-ev"></div></div>
     <div class="kpi vermelho"><div class="kl">Total de Saídas</div><div class="kv" id="kpi-s">—</div><div class="kvar" id="kpi-sv"></div></div>
     <div class="kpi azul"><div class="kl">Resultado Líquido</div><div class="kv" id="kpi-r">—</div></div>
     <div class="kpi verde"><div class="kl">Margem de Resultado</div><div class="kv" id="kpi-m">—</div></div>
+  </div>
+  <div class="prog-card" id="card-anual">
+    <div class="prog-hdr"><span id="anual-label">Ganhos totais em 2026</span><span id="anual-valor" style="font-weight:700;color:#059669;font-size:15px;">—</span></div>
+    <div class="anual-wrap" id="anual-meses"></div>
   </div>
   <div class="prog-card">
     <div class="prog-hdr"><span>Saídas vs Entradas</span><span id="prog-pct">—</span></div>
@@ -324,22 +370,11 @@ tbody tr:hover td{background:#f9fafb;}
     <select id="f-cat" onchange="filtrarLanc()">
       <option value="">Todas as categorias</option>
     </select>
-    <select id="f-mes" onchange="filtrarLanc()">
-      <option value="2026-12">Dezembro 2026</option>
-      <option value="2026-11">Novembro 2026</option>
-      <option value="2026-10">Outubro 2026</option>
-      <option value="2026-09">Setembro 2026</option>
-      <option value="2026-08">Agosto 2026</option>
-      <option value="2026-07">Julho 2026</option>
-      <option value="2026-06">Junho 2026</option>
-      <option value="2026-05">Maio 2026</option>
-      <option value="2026-04" selected>Abril 2026</option>
-      <option value="2026-03">Março 2026</option>
-      <option value="2026-02">Fevereiro 2026</option>
-      <option value="2026-01">Janeiro 2026</option>
-      <option value="2025-12">Dezembro 2025</option>
-      <option value="2025-11">Novembro 2025</option>
-    </select>
+    <select id="f-mes" onchange="filtrarLanc()"></select>
+    <button class="btn bs" onclick="exportarCSV()" title="Exportar lista filtrada como CSV">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Exportar CSV
+    </button>
   </div>
   <div class="card">
     <div class="tw"><table><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Tipo</th><th>Valor</th><th>Ações</th></tr></thead>
@@ -504,6 +539,25 @@ tbody tr:hover td{background:#f9fafb;}
 <!-- ═══════ TOAST ═══════ -->
 <div id="toast"></div>
 
+<!-- ═══════ FAB ═══════ -->
+<button class="fab" onclick="abrirModalNovoLanc()" title="Novo lançamento">+</button>
+
+<!-- ═══════ BUSCA GLOBAL ═══════ -->
+<div id="busca-global-bg" onclick="if(event.target===this)fecharBuscaGlobal()">
+  <div class="busca-box">
+    <div class="busca-input-row">
+      <svg width="18" height="18" fill="none" stroke="#9ca3af" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="busca-global-input" placeholder="Buscar lançamentos..." oninput="renderBuscaGlobal(this.value)" autocomplete="off"/>
+      <span class="busca-kbd">Esc</span>
+    </div>
+    <div id="busca-global-results"></div>
+    <div style="padding:8px 18px;border-top:1px solid #f3f4f6;display:flex;gap:16px;flex-wrap:wrap;">
+      <span style="font-size:11px;color:#9ca3af;"><span class="busca-kbd">1</span>–<span class="busca-kbd">7</span> navegar</span>
+      <span style="font-size:11px;color:#9ca3af;"><span class="busca-kbd">Ctrl K</span> busca</span>
+    </div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════
 // SUPABASE
@@ -528,8 +582,31 @@ const sb = supabase.createClient(SUPA_URL, SUPA_KEY, {
 let CAT_SAIDA   = [];
 let CAT_ENTRADA = [];
 
-const MNOME={'2026-12':'Dezembro 2026','2026-11':'Novembro 2026','2026-10':'Outubro 2026','2026-09':'Setembro 2026','2026-08':'Agosto 2026','2026-07':'Julho 2026','2026-06':'Junho 2026','2026-05':'Maio 2026','2026-04':'Abril 2026','2026-03':'Março 2026','2026-02':'Fevereiro 2026','2026-01':'Janeiro 2026','2025-12':'Dezembro 2025','2025-11':'Novembro 2025'};
-const MANT={'2026-12':'2026-11','2026-11':'2026-10','2026-10':'2026-09','2026-09':'2026-08','2026-08':'2026-07','2026-07':'2026-06','2026-06':'2026-05','2026-05':'2026-04','2026-04':'2026-03','2026-03':'2026-02','2026-02':'2026-01','2026-01':'2025-12','2025-12':'2025-11','2025-11':null};
+// Gera MNOME e MANT dinamicamente para os últimos 36 meses
+(function() {
+  const NOMES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const agora=new Date(); const qtd=36;
+  window.MNOME={}; window.MANT={};
+  let ant=null;
+  for(let i=qtd-1;i>=0;i--){
+    const d=new Date(agora.getFullYear(),agora.getMonth()-i,1);
+    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    MNOME[k]=`${NOMES[d.getMonth()]} ${d.getFullYear()}`;
+    MANT[k]=ant; ant=k;
+  }
+})();
+
+function opcoesM(sel){
+  return Object.entries(MNOME).reverse().map(([k,v])=>`<option value="${k}"${k===sel?' selected':''}>${v}</option>`).join('');
+}
+function popularSelects(){
+  const meses=Object.keys(MNOME).sort().reverse();
+  const recente=meses[0];
+  ['mes-select','f-mes'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&!el.options.length) el.innerHTML=opcoesM(recente);
+  });
+}
 
 let LANCS = [];
 
@@ -600,9 +677,14 @@ function abrirModal(titulo,corpo,rodape){
 }
 function fecharModal(e){
   if(e&&e.target!==document.getElementById('modal-bg'))return;
+  // Ao clicar no fundo escuro, confirma se há dados preenchidos
+  if(e&&e.target===document.getElementById('modal-bg')){
+    const temDados=Array.from(document.querySelectorAll('#modal-body input:not([type=checkbox]):not([type=color]):not([readonly]),#modal-body textarea'))
+      .some(el=>el.value.trim()!=='');
+    if(temDados&&!confirm('Fechar sem salvar?'))return;
+  }
   document.getElementById('modal-bg').classList.remove('open');
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('modal-bg').classList.remove('open');});
 
 // ══════════════════════════════════════════════
 // NAVEGAÇÃO
@@ -636,12 +718,14 @@ function renderFechamentos(){
     const res=d.e-d.s;
     const mrg=d.e>0?((res/d.e)*100).toFixed(1)+'%':'—';
     const nome=MNOME[m]||m;
+    const pct=d.e>0?Math.min((d.s/d.e)*100,100):0;
+    const cor=pct>90?'#ef4444':pct>70?'#f59e0b':'#10b981';
     return`<tr>
       <td><strong>${nome}</strong></td>
       <td class="ve">${fmt(d.e)}</td>
       <td class="vs">${fmt(d.s)}</td>
       <td class="${res>=0?'ve':'vs'}">${fmt(res)}</td>
-      <td>${mrg}</td>
+      <td><div>${mrg}</div><div style="background:#f3f4f6;border-radius:999px;height:5px;overflow:hidden;margin-top:5px;min-width:80px;"><div style="width:${pct.toFixed(0)}%;height:5px;border-radius:999px;background:${cor};"></div></div></td>
       <td><button class="btn bs" style="padding:4px 10px;font-size:12px;" onclick="verFechamentoReal('${m}')">Ver detalhes</button></td>
     </tr>`;
   }).join('');
@@ -797,6 +881,30 @@ function atualizarKPIs(mes){
   f.style.background=pct>90?'#ef4444':pct>70?'#f59e0b':'#10b981';
   document.getElementById('prog-pct').textContent=pct.toFixed(1)+'% das entradas comprometidas';
   document.getElementById('prog-max').textContent=fmt(d.e);
+  atualizarAnual();
+}
+
+function atualizarAnual(){
+  const ano=new Date().getFullYear().toString();
+  const mesesAno=Object.keys(MNOME).filter(m=>m.startsWith(ano)).sort();
+  const totalE=LANCS.filter(l=>l.mes.startsWith(ano)&&l.tipo==='entrada').reduce((s,l)=>s+l.valor,0);
+  const el=document.getElementById('anual-valor');
+  if(el) el.textContent=fmt(totalE);
+  const lbl=document.getElementById('anual-label');
+  if(lbl) lbl.textContent=`Ganhos totais em ${ano}`;
+  const maxE=Math.max(...mesesAno.map(m=>buildDados(m).e),1);
+  const wrap=document.getElementById('anual-meses');
+  if(!wrap)return;
+  wrap.innerHTML=mesesAno.map(m=>{
+    const d=buildDados(m);
+    const pct=maxE>0?(d.e/maxE*100):0;
+    const nomeCurto=(MNOME[m]||m).split(' ')[0].slice(0,3);
+    return`<div class="anual-barra" title="${MNOME[m]||m}: ${fmt(d.e)}">
+      <div class="anual-col"><div class="anual-fill" style="height:${Math.max(pct,d.e>0?4:1)}%"></div></div>
+      <div class="anual-mes">${nomeCurto}</div>
+      ${d.e>0?`<div class="anual-val">R$${(d.e/1000).toFixed(0)}k</div>`:''}
+    </div>`;
+  }).join('');
 }
 
 function renderDashLanc(mes){
@@ -1225,9 +1333,7 @@ function abrirCategorizar(rowId,desc){
     <div class="fg"><label class="fl">Categoria</label>
       <select id="cat-sel" class="fi">${opts}</select></div>
     <div class="fg"><label class="fl">Mês de referência</label>
-      <select id="cat-mes" class="fi">
-        ${Object.entries(MNOME).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}
-      </select></div>`,
+      <select id="cat-mes" class="fi">${opcoesM()}</select></div>`,
     `<button class="btn bs" onclick="fecharModal()">Cancelar</button>
      <button class="btn bp" onclick="aplicarCategoria('${rowId}','${desc}','${tipo}',${valor},'${dataTxt}')">Mover para Lançamentos</button>`
   );
@@ -1292,10 +1398,7 @@ function verFechamento(nome,e,s){
 function abrirModalFechamento(){
   abrirModal('Novo Fechamento',`
     <div class="fg"><label class="fl">Mês de referência</label>
-      <select id="nf-mes" class="fi">
-        <option value="2026-05">Maio 2026</option><option value="2026-04">Abril 2026</option>
-        <option value="2026-03">Março 2026</option>
-      </select></div>
+      <select id="nf-mes" class="fi">${opcoesM()}</select></div>
     <div class="fg"><label class="fl">Observações</label>
       <textarea id="nf-obs" class="fi" rows="3" placeholder="Observações sobre este fechamento..."></textarea></div>`,
     `<button class="btn bs" onclick="fecharModal()">Cancelar</button>
@@ -1477,6 +1580,96 @@ async function salvarConfig() {
 }
 
 // ══════════════════════════════════════════════
+// EXPORTAR CSV
+// ══════════════════════════════════════════════
+function exportarCSV(){
+  const busca=document.getElementById('f-busca').value.toLowerCase();
+  const tipo=document.getElementById('f-tipo').value;
+  const cat=document.getElementById('f-cat').value;
+  const mes=document.getElementById('f-mes').value;
+  const lista=LANCS.filter(l=>
+    (!busca||l.desc.toLowerCase().includes(busca))&&
+    (!tipo||l.tipo===tipo)&&(!cat||l.cat===cat)&&(!mes||l.mes===mes));
+  if(!lista.length){toast('Nenhum lançamento para exportar','erro');return;}
+  const rows=[['Data','Descrição','Categoria','Tipo','Valor']];
+  lista.forEach(l=>rows.push([l.data,l.desc,l.cat||'',l.tipo,l.valor.toFixed(2).replace('.',',')]));
+  const csv='﻿'+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download=`lancamentos-${mes||'todos'}.csv`; a.click();
+  toast(`${lista.length} lançamentos exportados!`,'sucesso');
+}
+
+// ══════════════════════════════════════════════
+// BUSCA GLOBAL
+// ══════════════════════════════════════════════
+function abrirBuscaGlobal(){
+  document.getElementById('busca-global-bg').classList.add('open');
+  setTimeout(()=>document.getElementById('busca-global-input').focus(),60);
+  renderBuscaGlobal('');
+}
+function fecharBuscaGlobal(){
+  document.getElementById('busca-global-bg').classList.remove('open');
+  document.getElementById('busca-global-input').value='';
+}
+function renderBuscaGlobal(q){
+  const lista=q.length<2?LANCS.slice(0,8):LANCS.filter(l=>
+    l.desc.toLowerCase().includes(q.toLowerCase())||(l.cat||'').toLowerCase().includes(q.toLowerCase())
+  ).slice(0,12);
+  document.getElementById('busca-global-results').innerHTML=lista.length
+    ?lista.map(l=>`<div class="busca-item" onclick="fecharBuscaGlobal();irParaLanc('${l.id}')">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+          <span style="font-size:15px;">${l.tipo==='entrada'?'⬆':'⬇'}</span>
+          <div style="min-width:0;">
+            <div style="font-size:13px;font-weight:500;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px;">${l.desc}</div>
+            <div style="font-size:11px;color:#9ca3af;">${l.data} · <span style="background:#f3f4f6;color:#6b7280;padding:1px 5px;border-radius:4px;">${l.cat||'—'}</span></div>
+          </div>
+        </div>
+        <span class="${l.tipo==='entrada'?'ve':'vs'}" style="flex-shrink:0;">${fmt(l.valor)}</span>
+      </div>`).join('')
+    :'<div style="text-align:center;padding:24px;color:#9ca3af;font-size:13px;">Nenhum resultado</div>';
+}
+function irParaLanc(id){
+  irParaPagina('lancamentos');
+  setTimeout(()=>{
+    const row=document.getElementById('row-'+id);
+    if(row){row.scrollIntoView({behavior:'smooth',block:'center'});
+      row.style.background='#ede9fe';setTimeout(()=>row.style.background='',1500);}
+  },120);
+}
+
+// ══════════════════════════════════════════════
+// MODO ESCURO
+// ══════════════════════════════════════════════
+function toggleDark(){
+  const escuro=document.body.classList.toggle('dark');
+  localStorage.setItem('dark',escuro?'1':'0');
+  document.getElementById('dark-label').textContent=escuro?'Modo claro':'Modo escuro';
+}
+
+// ══════════════════════════════════════════════
+// ATALHOS DE TECLADO
+// ══════════════════════════════════════════════
+const _PAGES=['dashboard','lancamentos','importar','pendentes','fechamentos','categorias','configuracoes'];
+function irParaPagina(p){
+  const idx=_PAGES.indexOf(p); if(idx<0)return;
+  irPara(p,document.querySelectorAll('.nl')[idx]);
+}
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();abrirBuscaGlobal();return;}
+  if(e.key==='Escape'){
+    if(document.getElementById('busca-global-bg').classList.contains('open')){fecharBuscaGlobal();return;}
+    document.getElementById('modal-bg').classList.remove('open');return;
+  }
+  const tag=document.activeElement.tagName;
+  if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
+  if(document.getElementById('modal-bg').classList.contains('open'))return;
+  if(document.getElementById('busca-global-bg').classList.contains('open'))return;
+  const idx=parseInt(e.key)-1;
+  if(idx>=0&&idx<_PAGES.length) irParaPagina(_PAGES[idx]);
+});
+
+// ══════════════════════════════════════════════
 // AUTENTICAÇÃO
 // ══════════════════════════════════════════════
 sb.auth.onAuthStateChange(async (event, session) => {
@@ -1579,12 +1772,20 @@ async function iniciarDashboard() {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
+  // Aplicar dark mode salvo
+  if(localStorage.getItem('dark')==='1'){
+    document.body.classList.add('dark');
+    const lbl=document.getElementById('dark-label');
+    if(lbl) lbl.textContent='Modo claro';
+  }
+  // Popular selects de mês dinamicamente
+  popularSelects();
+
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     document.getElementById('login-screen').classList.add('oculto');
     if (!chartBarras) await iniciarDashboard();
   }
-  // Se não tiver sessão, a tela de login já está visível por padrão
 });
 </script>
 </body>
